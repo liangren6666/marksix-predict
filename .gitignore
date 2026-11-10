@@ -1,0 +1,12 @@
+__pycache__/
+models/date_cache/
+*.py[cod]
+.venv/
+.backups/
+web/node_modules/
+web/dist/
+web/public/data/
+build/
+dist/
+release/
+*.spec

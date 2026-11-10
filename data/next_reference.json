@@ -1,0 +1,133 @@
+{
+  "title": "新澳门彩 · 下一期特码参考",
+  "lottery_key": "newam6hc",
+  "generated_at": "2026-11-09T15:05:37+08:00",
+  "dataset": "D:\\Programs\\彩票预测\\data\\newam6hc_5y_verified.csv",
+  "random_top1_theory": 0.02040816326530612,
+  "last_draw": {
+    "issue": 2026312,
+    "nums": [
+      31,
+      46,
+      4,
+      43,
+      32,
+      15
+    ],
+    "special": 38
+  },
+  "next_issue_hint": 2026313,
+  "target": "next_special",
+  "target_note": "仅预测下一期「特码」（1 个号码），不包含 6 个正码组合。",
+  "models": {
+    "hgb_ensemble": {
+      "id": "hgb",
+      "label": "梯度提升 (HGB)",
+      "kind": "ml",
+      "desc": "遗漏、窗口频次等特征 + HGB 与逻辑回归融合。",
+      "blend_weight_hgb": 0.5,
+      "window": 30,
+      "topk": 10,
+      "top1": 20,
+      "picks": [
+        {
+          "rank": 1,
+          "num": 20,
+          "p": 0.25676
+        },
+        {
+          "rank": 2,
+          "num": 29,
+          "p": 0.21839
+        },
+        {
+          "rank": 3,
+          "num": 2,
+          "p": 0.05468
+        },
+        {
+          "rank": 4,
+          "num": 48,
+          "p": 0.02681
+        },
+        {
+          "rank": 5,
+          "num": 10,
+          "p": 0.02348
+        },
+        {
+          "rank": 6,
+          "num": 47,
+          "p": 0.01953
+        },
+        {
+          "rank": 7,
+          "num": 41,
+          "p": 0.01924
+        },
+        {
+          "rank": 8,
+          "num": 32,
+          "p": 0.01906
+        },
+        {
+          "rank": 9,
+          "num": 1,
+          "p": 0.01874
+        },
+        {
+          "rank": 10,
+          "num": 43,
+          "p": 0.01813
+        }
+      ]
+    },
+    "markov_order1": {
+      "id": "markov",
+      "label": "马尔可夫链",
+      "kind": "baseline",
+      "desc": "在全部历史中统计：上一期特码为本期时，下期最常出现的特码。",
+      "prev_special": 38,
+      "top1": 17,
+      "support": 3,
+      "candidates": [
+        {
+          "num": 17,
+          "count": 3
+        },
+        {
+          "num": 32,
+          "count": 2
+        },
+        {
+          "num": 25,
+          "count": 2
+        },
+        {
+          "num": 47,
+          "count": 2
+        },
+        {
+          "num": 10,
+          "count": 2
+        }
+      ],
+      "fallback_global_top": null
+    },
+    "repeat_last": {
+      "id": "repeat_last",
+      "label": "沿用上一期",
+      "kind": "baseline",
+      "num": 38,
+      "desc": "简单对照：猜测下期特码与本期相同（长期命中率接近随机）。"
+    }
+  },
+  "disclaimer_zh": "历史回测显示各方法 Top-1 命中率约 2%，与理论随机接近；本页仅供研究参考，不构成投注建议。",
+  "refresh_steps": [
+    "python fetch_marksix.py --kind newam6hc",
+    "python verify_marksix.py --kind newam6hc",
+    "python -m ml.run_train",
+    "python -m ml.export_next_reference",
+    "python scripts/sync_viz_data.py"
+  ]
+}

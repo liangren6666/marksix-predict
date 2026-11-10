@@ -1,0 +1,160 @@
+{
+  "title": "三模型特码预测对比",
+  "dataset": "D:\\Programs\\彩票预测\\data\\newam6hc_5y_verified.csv",
+  "window": 30,
+  "random_top1_theory": 0.02040816326530612,
+  "split": {
+    "train": 1220,
+    "val": 261,
+    "test": 262
+  },
+  "evaluation_note": "验证模型仅用 train 拟合；测试模型用 train+val 拟合。理论随机为 k/49 的期望值。",
+  "issues_test_range": [
+    2026051,
+    2026312
+  ],
+  "models_meta": [
+    {
+      "id": "random",
+      "model": "理论随机",
+      "kind": "baseline",
+      "desc": "每期特码 1/49 均匀假设，不可学习时的底线（约 2.04% Top-1）。"
+    },
+    {
+      "id": "markov",
+      "model": "马尔可夫链",
+      "kind": "baseline",
+      "desc": "根据上一期特码查转移概率；简单规则中最常见、可解释的对照。"
+    },
+    {
+      "id": "hgb",
+      "model": "梯度提升(HGB)",
+      "kind": "ml",
+      "desc": "遗漏 + 窗口频次等表格特征；本数据集上较稳的机器学习方案。"
+    }
+  ],
+  "test_ranking": [
+    {
+      "id": "hgb",
+      "model": "梯度提升(HGB)",
+      "kind": "ml",
+      "desc": "遗漏 + 窗口频次等表格特征；本数据集上较稳的机器学习方案。",
+      "split": "test",
+      "seconds": 0.357,
+      "top1": 0.026718,
+      "top3": 0.064885,
+      "top5": 0.083969,
+      "top10": 0.179389,
+      "n": 262
+    },
+    {
+      "id": "random",
+      "model": "理论随机",
+      "kind": "baseline",
+      "desc": "每期特码 1/49 均匀假设，不可学习时的底线（约 2.04% Top-1）。",
+      "split": "test",
+      "seconds": 0,
+      "top1": 0.020408,
+      "top3": 0.061224,
+      "top5": 0.102041,
+      "top10": 0.204082,
+      "n": 262
+    },
+    {
+      "id": "markov",
+      "model": "马尔可夫链",
+      "kind": "baseline",
+      "desc": "根据上一期特码查转移概率；简单规则中最常见、可解释的对照。",
+      "split": "test",
+      "seconds": 0,
+      "top1": 0.015267,
+      "top3": 0.053435,
+      "top5": 0.10687,
+      "top10": 0.194656,
+      "n": 262
+    }
+  ],
+  "all_results": [
+    {
+      "id": "random",
+      "model": "理论随机",
+      "kind": "baseline",
+      "desc": "每期特码 1/49 均匀假设，不可学习时的底线（约 2.04% Top-1）。",
+      "split": "val",
+      "seconds": 0,
+      "top1": 0.020408,
+      "top3": 0.061224,
+      "top5": 0.102041,
+      "top10": 0.204082,
+      "n": 261
+    },
+    {
+      "id": "random",
+      "model": "理论随机",
+      "kind": "baseline",
+      "desc": "每期特码 1/49 均匀假设，不可学习时的底线（约 2.04% Top-1）。",
+      "split": "test",
+      "seconds": 0,
+      "top1": 0.020408,
+      "top3": 0.061224,
+      "top5": 0.102041,
+      "top10": 0.204082,
+      "n": 262
+    },
+    {
+      "id": "markov",
+      "model": "马尔可夫链",
+      "kind": "baseline",
+      "desc": "根据上一期特码查转移概率；简单规则中最常见、可解释的对照。",
+      "split": "val",
+      "seconds": 0,
+      "top1": 0.011494,
+      "top3": 0.068966,
+      "top5": 0.103448,
+      "top10": 0.214559,
+      "n": 261
+    },
+    {
+      "id": "markov",
+      "model": "马尔可夫链",
+      "kind": "baseline",
+      "desc": "根据上一期特码查转移概率；简单规则中最常见、可解释的对照。",
+      "split": "test",
+      "seconds": 0,
+      "top1": 0.015267,
+      "top3": 0.053435,
+      "top5": 0.10687,
+      "top10": 0.194656,
+      "n": 262
+    },
+    {
+      "id": "hgb",
+      "model": "梯度提升(HGB)",
+      "kind": "ml",
+      "desc": "遗漏 + 窗口频次等表格特征；本数据集上较稳的机器学习方案。",
+      "split": "val",
+      "seconds": 1.558,
+      "top1": 0.019157,
+      "top3": 0.068966,
+      "top5": 0.091954,
+      "top10": 0.187739,
+      "n": 261
+    },
+    {
+      "id": "hgb",
+      "model": "梯度提升(HGB)",
+      "kind": "ml",
+      "desc": "遗漏 + 窗口频次等表格特征；本数据集上较稳的机器学习方案。",
+      "split": "test",
+      "seconds": 0.357,
+      "top1": 0.026718,
+      "top3": 0.064885,
+      "top5": 0.083969,
+      "top10": 0.179389,
+      "n": 262
+    }
+  ],
+  "conclusion_zh": "三支模型在测试集 Top-1 均接近理论随机（约 2%），历史号码未展现可稳定利用的规律。",
+  "recommendation_zh": "研究用途推荐关注测试集 Top-5/Top-10；若 Top-1 无法稳定高于 2% 约 1 个百分点，则不具备投注优势。",
+  "best_on_test_top1": "梯度提升(HGB)"
+}

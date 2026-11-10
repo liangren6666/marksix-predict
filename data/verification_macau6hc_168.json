@@ -1,0 +1,27 @@
+{
+  "generated_at_utc": "2026-11-09T06:28:08.251147+00:00",
+  "kind": "macau6hc_168",
+  "display_name": "澳门六合彩(168)",
+  "input_csv": "D:\\Programs\\彩票预测\\data\\macau6hc_168.csv",
+  "total_issues": 0,
+  "compare_55128": null,
+  "compare_168": {
+    "source": "168yh_game_300",
+    "shared_issues": 0,
+    "only_local": 0,
+    "only_remote": 414,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "detail_page_spot_check": {
+    "sample_size": 0,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "summary": {
+    "verified_rows": 0,
+    "failed": 0,
+    "dual_with_168": 0
+  },
+  "note": "am6hc(55128澳门彩) 与 macau6hc_168(168澳门六合彩) 为不同产品线，同期号号码不应相同；勿合并到同一训练集。"
+}

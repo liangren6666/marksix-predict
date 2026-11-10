@@ -1,0 +1,78 @@
+{
+  "dataset": "D:\\Programs\\彩票预测\\data\\newam6hc_5y_verified.csv",
+  "target": "next_special_number",
+  "n_draws": 1773,
+  "issue_range": [
+    2022001,
+    2026312
+  ],
+  "window": 30,
+  "split": {
+    "train_samples": 1220,
+    "val_samples": 261,
+    "test_samples": 262
+  },
+  "random_baseline": {
+    "top1": 0.02040816326530612,
+    "top3": 0.061224489795918366,
+    "top5": 0.10204081632653061
+  },
+  "statistical_baselines_on_test": {
+    "frequency_top1": {
+      "name": "frequency_top1",
+      "top_num": 6,
+      "top1_acc": 0.019083969465648856
+    },
+    "markov_order1": {
+      "name": "markov_order1",
+      "top1_acc": 0.026717557251908396
+    },
+    "repeat_last": {
+      "name": "repeat_last",
+      "top1_acc": 0.007633587786259542
+    }
+  },
+  "lstm": {
+    "val": {
+      "top1_acc": 0.030651340261101723,
+      "top3_acc": 0.061302680522203445,
+      "top5_acc": 0.10344827175140381,
+      "loss": 4.406159400939941
+    },
+    "test": {
+      "top1_acc": 0.003816793905571103,
+      "top3_acc": 0.038167938590049744,
+      "top5_acc": 0.08396946638822556,
+      "loss": 4.575931549072266
+    },
+    "verdict_test": "no_edge"
+  },
+  "mlp_multihot": {
+    "val": {
+      "top1_acc": 0.007662835065275431,
+      "top3_acc": 0.026819922029972076,
+      "top5_acc": 0.07662834972143173,
+      "loss": 4.203758239746094
+    },
+    "test": {
+      "top1_acc": 0.022900763899087906,
+      "top3_acc": 0.07251908630132675,
+      "top5_acc": 0.1221374049782753,
+      "loss": 4.208056449890137
+    },
+    "verdict_test": "below_simple_baseline"
+  },
+  "permutation_null_markov": {
+    "mean_top1": 0.02131578947368422,
+    "std_top1": 0.008490832665751515,
+    "n_perm": 100
+  },
+  "interpretation_zh": {
+    "目标说明": "用过去 window 期信息预测下一期特码（49 类分类）",
+    "理论随机Top1": "0.0204（约 2.04%）",
+    "若无法稳定超过随机+1%且超过马尔可夫基线": "历史数据未呈现可交易的预测优势",
+    "深度学习风险": "易在训练集过拟合伪规律；必须以时间外测试集为准",
+    "数据局限": "第三方开奖聚合数据，不保证等同官方物理开奖过程",
+    "合规与用途": "研究用途；勿视为投资建议或必胜策略"
+  }
+}

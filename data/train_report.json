@@ -1,0 +1,70 @@
+{
+  "dataset": "D:\\Programs\\彩票预测\\data\\newam6hc_5y_verified.csv",
+  "target": "next_special",
+  "window": 30,
+  "n_samples": 1743,
+  "split": {
+    "train": 1220,
+    "val": 261,
+    "test": 262,
+    "note": "test 集在训练与调参全程未参与",
+    "validation_note": "验证集仅用于选择融合权重；验证成绩属于调参成绩，最终以测试集为准",
+    "test_fit_note": "权重固定后，两个模型均使用 train+val 重训并保存"
+  },
+  "models": {
+    "primary": "HistGradientBoostingClassifier",
+    "secondary": "LogisticRegression(multinomial)",
+    "blend_weight_hgb": 0.5
+  },
+  "metrics": {
+    "val_ensemble": {
+      "n": 261,
+      "top1": 0.034482758620689655,
+      "top3": 0.07662835249042145,
+      "top5": 0.10344827586206896,
+      "top10": 0.210727969348659
+    },
+    "test_hgb": {
+      "n": 262,
+      "top1": 0.04198473282442748,
+      "top3": 0.07633587786259542,
+      "top5": 0.11068702290076336,
+      "top10": 0.20229007633587787
+    },
+    "test_logreg": {
+      "n": 262,
+      "top1": 0.015267175572519083,
+      "top3": 0.03816793893129771,
+      "top5": 0.0916030534351145,
+      "top10": 0.20610687022900764
+    },
+    "test_ensemble": {
+      "n": 262,
+      "top1": 0.015267175572519083,
+      "top3": 0.04580152671755725,
+      "top5": 0.09923664122137404,
+      "top10": 0.21755725190839695
+    }
+  },
+  "baselines_test": {
+    "random_top1": 0.02040816326530612,
+    "frequency_top1": {
+      "name": "frequency_top1",
+      "top_num": 6,
+      "top1_acc": 0.019083969465648856
+    },
+    "markov_order1": {
+      "name": "markov_order1",
+      "top1_acc": 0.022900763358778626
+    },
+    "repeat_last": {
+      "name": "repeat_last",
+      "top1_acc": 0.007633587786259542
+    }
+  },
+  "verdict": "无优势：测试 Top-1 接近随机，不建议用于预测下注。",
+  "issues_test_range": [
+    2026051,
+    2026312
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "generated_at_utc": "2026-11-09T06:26:52.315108+00:00",
+  "kind": "am6hc",
+  "display_name": "澳门彩",
+  "input_csv": "D:\\Programs\\彩票预测\\data\\am6hc_5y.csv",
+  "total_issues": 1773,
+  "compare_55128": {
+    "source": "55128_live_year_pages",
+    "shared_issues": 1773,
+    "only_local": 0,
+    "only_remote": 0,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "compare_168": null,
+  "detail_page_spot_check": {
+    "sample_size": 15,
+    "mismatch_count": 0,
+    "issues_sampled": [
+      2022052,
+      2022179,
+      2022210,
+      2022229,
+      2022286,
+      2023093,
+      2023137,
+      2023199,
+      2025021,
+      2025114,
+      2025214,
+      2025290,
+      2026048,
+      2026056,
+      2026058
+    ],
+    "mismatches": []
+  },
+  "summary": {
+    "verified_rows": 1773,
+    "failed": 0,
+    "dual_with_168": 0
+  },
+  "note": "am6hc(55128澳门彩) 与 macau6hc_168(168澳门六合彩) 为不同产品线，同期号号码不应相同；勿合并到同一训练集。"
+}

@@ -1,0 +1,104 @@
+{
+  "dataset": "newam6hc_5y_verified.csv",
+  "target": "regular_numbers_top_6_unordered",
+  "split": {
+    "train": 1150,
+    "validation": 261,
+    "test": 262
+  },
+  "test_issue_range": [
+    2026051,
+    2026312
+  ],
+  "uniform_expected_hits_per_draw": 0.7346938775510204,
+  "validation_hits": {
+    "hgb_by_iteration": {
+      "20": 204,
+      "60": 206,
+      "120": 200
+    },
+    "gru_by_epoch": {
+      "5": 182,
+      "10": 173,
+      "20": 167
+    }
+  },
+  "selected_parameters": {
+    "hgb_iterations": 60,
+    "gru_epochs": 5,
+    "seed": 42
+  },
+  "results": {
+    "历史热号": {
+      "total_hits": 188,
+      "average_hits": 0.7175572519083969,
+      "draws_by_hit_count_0_to_6": [
+        110,
+        119,
+        30,
+        3,
+        0,
+        0,
+        0
+      ],
+      "uniform_null_tail_probability": 0.655004043411055
+    },
+    "近30期热号": {
+      "total_hits": 209,
+      "average_hits": 0.7977099236641222,
+      "draws_by_hit_count_0_to_6": [
+        103,
+        114,
+        40,
+        5,
+        0,
+        0,
+        0
+      ],
+      "uniform_null_tail_probability": 0.09744025327882824
+    },
+    "逻辑回归": {
+      "total_hits": 202,
+      "average_hits": 0.7709923664122137,
+      "draws_by_hit_count_0_to_6": [
+        116,
+        100,
+        39,
+        4,
+        3,
+        0,
+        0
+      ],
+      "uniform_null_tail_probability": 0.23080278525012896
+    },
+    "梯度提升树": {
+      "total_hits": 216,
+      "average_hits": 0.8244274809160306,
+      "draws_by_hit_count_0_to_6": [
+        102,
+        108,
+        48,
+        4,
+        0,
+        0,
+        0
+      ],
+      "uniform_null_tail_probability": 0.032036048114126046
+    },
+    "GRU": {
+      "total_hits": 182,
+      "average_hits": 0.6946564885496184,
+      "draws_by_hit_count_0_to_6": [
+        122,
+        105,
+        29,
+        5,
+        1,
+        0,
+        0
+      ],
+      "uniform_null_tail_probability": 0.8137555969239207
+    }
+  },
+  "note": "训练、验证、测试按期号排序。选定训练轮数后在测试段之前的数据上重训。同一测试段已用于上一轮实验，本报告用于对照；模型优势需要用新开奖确认。随机尾概率按单个方法计算，未对多个方法校正。"
+}

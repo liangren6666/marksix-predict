@@ -1,0 +1,86 @@
+{
+  "generated_at_utc": "2026-11-09T06:18:09.574127+00:00",
+  "input_csv": "D:\\Programs\\彩票预测\\data\\newam6hc_5y.csv",
+  "total_issues": 1773,
+  "primary_source": "https://m.55128.cn",
+  "secondary_source": "https://168yh.com/game/301/",
+  "compare_55128": {
+    "source": "55128_live_year_pages",
+    "shared_issues": 1773,
+    "only_local": 0,
+    "only_remote": 0,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "only_local_sample": [],
+    "only_remote_sample": []
+  },
+  "compare_168": {
+    "source": "168yh_game_301",
+    "shared_issues": 438,
+    "only_local": 1335,
+    "only_remote": 0,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "only_local_sample": [
+      2022001,
+      2022002,
+      2022003,
+      2022004,
+      2022005,
+      2022006,
+      2022007,
+      2022008,
+      2022009,
+      2022010,
+      2022011,
+      2022012,
+      2022013,
+      2022014,
+      2022015,
+      2022016,
+      2022017,
+      2022018,
+      2022019,
+      2022020
+    ],
+    "only_remote_sample": []
+  },
+  "detail_page_spot_check": {
+    "sample_size": 20,
+    "mismatch_count": 0,
+    "issues_sampled": [
+      2022052,
+      2022062,
+      2022066,
+      2022179,
+      2022192,
+      2022210,
+      2022229,
+      2022286,
+      2023083,
+      2023093,
+      2023137,
+      2023199,
+      2024135,
+      2025021,
+      2025114,
+      2025214,
+      2025290,
+      2026048,
+      2026056,
+      2026058
+    ],
+    "mismatches": []
+  },
+  "summary": {
+    "dual_verified": 438,
+    "single_verified_55128_only": 1335,
+    "failed_or_unverified": 0,
+    "168_coverage_issues": 438,
+    "168_issue_range": [
+      2025240,
+      2026312
+    ]
+  },
+  "authenticity_note": "校验确认：本地数据与 55128 当年页面及（在覆盖范围内）168yh 号码一致。这不等同于澳门特区政府法定六合彩官方档案；仅代表第三方开奖聚合站之间的一致性。"
+}
