@@ -31,6 +31,9 @@ jobs:
       - name: Fetch new draws
         id: update
         run: python scripts/update_newam6hc.py
+      - name: Train forecast models
+        if: steps.update.outputs.changed == 'true'
+        run: python -m ml.run_train --save-fit all
       - name: Rebuild date forecasts
         if: steps.update.outputs.changed == 'true'
         run: python -m ml.export_forecasts
@@ -39,8 +42,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/newam6hc_5y_verified.csv data/newam6hc_5y.csv data/forecasts.json
-          git commit -m "Update draws and forecasts."
+          git add data/newam6hc_5y_verified.csv data/newam6hc_5y.csv data/forecasts.json data/train_report.json models/hgb_special.pkl models/logreg_special.pkl
+          git commit -m "Update draws, retrain models, and rebuild forecasts."
           git push
       - uses: actions/setup-node@v4
         if: steps.update.outputs.changed == 'true'

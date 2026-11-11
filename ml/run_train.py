@@ -84,6 +84,12 @@ def main() -> None:
     parser.add_argument(
         "--report", type=Path, default=Path(__file__).resolve().parents[1] / "data" / "train_report.json"
     )
+    parser.add_argument(
+        "--save-fit",
+        choices=("eval", "all"),
+        default="eval",
+        help="eval 保存不含测试集的模型；all 在评估后用全部已开奖样本再拟合，供每日预测",
+    )
     args = parser.parse_args()
 
     df = load_newam6hc(args.csv)
@@ -162,7 +168,13 @@ def main() -> None:
             int(df.issue.iloc[test_special_start]),
             int(df.issue.iloc[test_special_start + len(test_specials) - 1]),
         ],
+        "saved_fit": args.save_fit,
     }
+    if args.save_fit == "all":
+        hgb = train_hgb(x, y)
+        logreg = train_logreg(x, y)
+        report["split"]["test_fit_note"] = "测试成绩来自 train+val 模型；保存的是随后用全部已开奖样本重新拟合的模型"
+        report["split"]["forecast_fit_note"] = "评估完成后，网站使用的两个模型用全部已开奖样本重新拟合"
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     with (args.out_dir / "hgb_special.pkl").open("wb") as f:
