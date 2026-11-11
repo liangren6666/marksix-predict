@@ -1,22 +1,22 @@
 {
   "title": "新澳门彩 · 下一期特码参考",
   "lottery_key": "newam6hc",
-  "generated_at": "2026-11-09T15:05:37+08:00",
+  "generated_at": "2026-11-11T21:55:56+08:00",
   "dataset": "D:\\Programs\\彩票预测\\data\\newam6hc_5y_verified.csv",
   "random_top1_theory": 0.02040816326530612,
   "last_draw": {
-    "issue": 2026312,
+    "issue": 2026315,
     "nums": [
-      31,
-      46,
-      4,
-      43,
-      32,
-      15
+      6,
+      9,
+      25,
+      27,
+      33,
+      22
     ],
-    "special": 38
+    "special": 48
   },
-  "next_issue_hint": 2026313,
+  "next_issue_hint": 2026316,
   "target": "next_special",
   "target_note": "仅预测下一期「特码」（1 个号码），不包含 6 个正码组合。",
   "models": {
@@ -25,60 +25,60 @@
       "label": "梯度提升 (HGB)",
       "kind": "ml",
       "desc": "遗漏、窗口频次等特征 + HGB 与逻辑回归融合。",
-      "blend_weight_hgb": 0.5,
+      "blend_weight_hgb": 0.8,
       "window": 30,
       "topk": 10,
-      "top1": 20,
+      "top1": 49,
       "picks": [
         {
           "rank": 1,
-          "num": 20,
-          "p": 0.25676
+          "num": 49,
+          "p": 0.06623
         },
         {
           "rank": 2,
-          "num": 29,
-          "p": 0.21839
+          "num": 47,
+          "p": 0.05477
         },
         {
           "rank": 3,
-          "num": 2,
-          "p": 0.05468
+          "num": 5,
+          "p": 0.04851
         },
         {
           "rank": 4,
-          "num": 48,
-          "p": 0.02681
+          "num": 3,
+          "p": 0.03534
         },
         {
           "rank": 5,
-          "num": 10,
-          "p": 0.02348
+          "num": 31,
+          "p": 0.03451
         },
         {
           "rank": 6,
-          "num": 47,
-          "p": 0.01953
+          "num": 29,
+          "p": 0.03083
         },
         {
           "rank": 7,
-          "num": 41,
-          "p": 0.01924
+          "num": 46,
+          "p": 0.02589
         },
         {
           "rank": 8,
-          "num": 32,
-          "p": 0.01906
+          "num": 8,
+          "p": 0.02473
         },
         {
           "rank": 9,
-          "num": 1,
-          "p": 0.01874
+          "num": 6,
+          "p": 0.02409
         },
         {
           "rank": 10,
-          "num": 43,
-          "p": 0.01813
+          "num": 17,
+          "p": 0.0237
         }
       ]
     },
@@ -87,28 +87,28 @@
       "label": "马尔可夫链",
       "kind": "baseline",
       "desc": "在全部历史中统计：上一期特码为本期时，下期最常出现的特码。",
-      "prev_special": 38,
-      "top1": 17,
-      "support": 3,
+      "prev_special": 48,
+      "top1": 28,
+      "support": 4,
       "candidates": [
         {
-          "num": 17,
+          "num": 28,
+          "count": 4
+        },
+        {
+          "num": 26,
+          "count": 4
+        },
+        {
+          "num": 23,
           "count": 3
         },
         {
-          "num": 32,
-          "count": 2
-        },
-        {
-          "num": 25,
-          "count": 2
+          "num": 46,
+          "count": 3
         },
         {
           "num": 47,
-          "count": 2
-        },
-        {
-          "num": 10,
           "count": 2
         }
       ],
@@ -118,7 +118,7 @@
       "id": "repeat_last",
       "label": "沿用上一期",
       "kind": "baseline",
-      "num": 38,
+      "num": 48,
       "desc": "简单对照：猜测下期特码与本期相同（长期命中率接近随机）。"
     }
   },

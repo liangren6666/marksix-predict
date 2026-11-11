@@ -1,12 +1,12 @@
 {
-  "generated_at_utc": "2026-11-09T06:27:13.801259+00:00",
+  "generated_at_utc": "2026-11-11T13:54:56.023970+00:00",
   "kind": "newam6hc",
   "display_name": "新澳门彩",
   "input_csv": "D:\\Programs\\彩票预测\\data\\newam6hc_5y.csv",
-  "total_issues": 1773,
+  "total_issues": 2428,
   "compare_55128": {
     "source": "55128_live_year_pages",
-    "shared_issues": 1773,
+    "shared_issues": 2428,
     "only_local": 0,
     "only_remote": 0,
     "mismatch_count": 0,
@@ -14,33 +14,35 @@
   },
   "compare_168": {
     "source": "168yh_game_301",
-    "shared_issues": 438,
-    "only_local": 1335,
+    "shared_issues": 441,
+    "only_local": 1987,
     "only_remote": 0,
     "mismatch_count": 0,
     "mismatches": []
   },
   "detail_page_spot_check": {
-    "sample_size": 10,
+    "sample_size": 12,
     "mismatch_count": 0,
     "issues_sampled": [
-      2022052,
-      2022210,
-      2022229,
-      2022286,
-      2023093,
-      2023137,
-      2023199,
-      2025214,
-      2026048,
-      2026058
+      2020169,
+      2020199,
+      2021070,
+      2021133,
+      2021170,
+      2021285,
+      2022263,
+      2022352,
+      2023110,
+      2024347,
+      2026121,
+      2026306
     ],
     "mismatches": []
   },
   "summary": {
-    "verified_rows": 1773,
+    "verified_rows": 2428,
     "failed": 0,
-    "dual_with_168": 438
+    "dual_with_168": 441
   },
   "note": "am6hc(55128澳门彩) 与 macau6hc_168(168澳门六合彩) 为不同产品线，同期号号码不应相同；勿合并到同一训练集。"
 }
