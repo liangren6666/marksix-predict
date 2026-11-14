@@ -74,7 +74,13 @@ def build_book(
 
     ordered = sorted(days)
     today = today or date.today()
-    default_date = today.isoformat() if today.isoformat() in days else (last_day + timedelta(days=1)).isoformat()
+    next_day = (last_day + timedelta(days=1)).isoformat()
+    if last_day >= today:
+        default_date = next_day
+    elif today.isoformat() in days:
+        default_date = today.isoformat()
+    else:
+        default_date = next_day
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "default_date": default_date,

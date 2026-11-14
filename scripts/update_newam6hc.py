@@ -7,9 +7,11 @@ import sys
 from datetime import date
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+_SOURCE_ROOT = Path(__file__).resolve().parents[1]
+if str(_SOURCE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SOURCE_ROOT))
 
+from ml.data import DEFAULT_CSV, ROOT
 from newam6hc_lib import (
     NEW_AM6HC,
     fetch_55128_year,
@@ -19,7 +21,7 @@ from newam6hc_lib import (
     save_verified_csv,
 )
 
-VERIFIED = ROOT / "data" / "newam6hc_5y_verified.csv"
+VERIFIED = DEFAULT_CSV
 PLAIN = ROOT / "data" / "newam6hc_5y.csv"
 
 
@@ -46,19 +48,23 @@ def _plain_from_verified(row: dict) -> dict:
     }
 
 
-def main() -> None:
-    existing = load_csv(VERIFIED)
+def update_draws() -> dict:
+    """抓取最近两年开奖并写回数据文件。返回是否有变化和最新期号。"""
+    verified = DEFAULT_CSV
+    plain = ROOT / "data" / "newam6hc_5y.csv"
+    existing = load_csv(verified)
     if not existing:
-        raise SystemExit(f"没有现成数据: {VERIFIED}")
+        raise RuntimeError(f"没有现成数据: {verified}")
     latest_before = max(existing)
     this_year = date.today().year
     years = sorted({this_year, this_year - 1, int(str(latest_before)[:4])})
     fresh: dict[int, dict] = {}
+    fetched = []
     for year in years:
         rows = fetch_55128_year(NEW_AM6HC, year)
-        print(f"{year} 年抓到 {len(rows)} 期")
+        fetched.append(f"{year} 年抓到 {len(rows)} 期")
         if year == this_year and not rows:
-            raise SystemExit(f"{year} 年没有抓到开奖，已保留原文件")
+            raise RuntimeError(f"{year} 年没有抓到开奖，已保留原文件")
         for row in rows:
             fresh[int(row["issue"])] = row
 
@@ -70,17 +76,33 @@ def main() -> None:
             existing[issue] = _verified_from_draw(row)
 
     latest_after = max(existing)
-    print(f"更新前最新期号 {latest_before}，现在 {latest_after}，changed={changed}")
     if changed:
         ordered = [existing[issue] for issue in sorted(existing, reverse=True)]
-        save_verified_csv(ordered, VERIFIED)
-        save_csv([_plain_from_verified(row) for row in ordered], PLAIN)
+        save_verified_csv(ordered, verified)
+        save_csv([_plain_from_verified(row) for row in ordered], plain)
+    return {
+        "changed": changed,
+        "before": latest_before,
+        "after": latest_after,
+        "fetched": fetched,
+    }
 
+
+def main() -> None:
+    try:
+        result = update_draws()
+    except RuntimeError as exc:
+        raise SystemExit(str(exc)) from exc
+    for line in result["fetched"]:
+        print(line)
+    print(
+        f"更新前最新期号 {result['before']}，现在 {result['after']}，changed={result['changed']}"
+    )
     output = os.environ.get("GITHUB_OUTPUT")
     if output:
         with open(output, "a", encoding="utf-8") as handle:
-            handle.write(f"changed={'true' if changed else 'false'}\n")
-            handle.write(f"latest={latest_after}\n")
+            handle.write(f"changed={'true' if result['changed'] else 'false'}\n")
+            handle.write(f"latest={result['after']}\n")
 
 
 if __name__ == "__main__":

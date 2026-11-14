@@ -16,7 +16,7 @@ const theory = computed(() => summary.value?.random_top1_theory ?? 1 / 49)
 
 onMounted(async () => {
   try {
-    const res = await fetch('/data/model_benchmark.json')
+    const res = await fetch(`${import.meta.env.BASE_URL}data/model_benchmark.json`)
     if (!res.ok) throw new Error('缺少 model_benchmark.json，请先运行: python -m ml.run_benchmark')
     summary.value = await res.json()
   } catch (e) {

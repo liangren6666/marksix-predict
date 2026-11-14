@@ -19,7 +19,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from ml.baselines import frequency_top1, markov_order1
-from ml.data import DEFAULT_CSV, load_newam6hc, temporal_split_index
+from ml.data import DEFAULT_CSV, ROOT, load_newam6hc, temporal_split_index
 from ml.evaluate import metrics_dict
 from ml.features import build_feature_matrix
 from ml.probability import predict_proba_49
@@ -72,33 +72,26 @@ def blend_proba(p1: np.ndarray, p2: np.ndarray, w: float = 0.75) -> np.ndarray:
     return w * p1 + (1.0 - w) * p2
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="训练并封存测试集评估")
-    parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
-    parser.add_argument("--window", type=int, default=30)
-    parser.add_argument("--train-ratio", type=float, default=0.7)
-    parser.add_argument("--val-ratio", type=float, default=0.15)
-    parser.add_argument(
-        "--out-dir", type=Path, default=Path(__file__).resolve().parents[1] / "models"
-    )
-    parser.add_argument(
-        "--report", type=Path, default=Path(__file__).resolve().parents[1] / "data" / "train_report.json"
-    )
-    parser.add_argument(
-        "--save-fit",
-        choices=("eval", "all"),
-        default="eval",
-        help="eval 保存不含测试集的模型；all 在评估后用全部已开奖样本再拟合，供每日预测",
-    )
-    args = parser.parse_args()
-
-    df = load_newam6hc(args.csv)
+def train_and_save(
+    csv: Path = DEFAULT_CSV,
+    out_dir: Path | None = None,
+    report_path: Path | None = None,
+    *,
+    window: int = 30,
+    train_ratio: float = 0.7,
+    val_ratio: float = 0.15,
+    save_fit: str = "eval",
+) -> dict:
+    """评估后保存特码模型。save_fit=all 时，保存的是全部已开奖样本重新拟合的模型。"""
+    out_dir = out_dir or ROOT / "models"
+    report_path = report_path or ROOT / "data" / "train_report.json"
+    df = load_newam6hc(csv)
     specials = df["special"].to_numpy()
     draws = df[[f"n{i}" for i in range(1, 7)] + ["special"]].to_numpy()
 
-    x, y = build_feature_matrix(specials, draws, args.window)
+    x, y = build_feature_matrix(specials, draws, window)
     n = len(y)
-    train_end, val_end = temporal_split_index(n, args.train_ratio, args.val_ratio)
+    train_end, val_end = temporal_split_index(n, train_ratio, val_ratio)
 
     x_train, y_train = x[:train_end], y[:train_end]
     x_val, y_val = x[train_end:val_end], y[train_end:val_end]
@@ -127,7 +120,7 @@ def main() -> None:
     p_test = blend_proba(p_test_h, p_test_l, best_w)
 
     # 统计基线（仅测试段对应特码）
-    test_special_start = args.window + val_end
+    test_special_start = window + val_end
     test_specials = specials[test_special_start:]
     train_specials = specials[:test_special_start]
 
@@ -139,9 +132,9 @@ def main() -> None:
     }
 
     report = {
-        "dataset": str(args.csv),
+        "dataset": str(csv),
         "target": "next_special",
-        "window": args.window,
+        "window": window,
         "n_samples": n,
         "split": {
             "train": train_end,
@@ -168,24 +161,54 @@ def main() -> None:
             int(df.issue.iloc[test_special_start]),
             int(df.issue.iloc[test_special_start + len(test_specials) - 1]),
         ],
-        "saved_fit": args.save_fit,
+        "saved_fit": save_fit,
     }
-    if args.save_fit == "all":
+    if save_fit == "all":
         hgb = train_hgb(x, y)
         logreg = train_logreg(x, y)
         report["split"]["test_fit_note"] = "测试成绩来自 train+val 模型；保存的是随后用全部已开奖样本重新拟合的模型"
         report["split"]["forecast_fit_note"] = "评估完成后，网站使用的两个模型用全部已开奖样本重新拟合"
 
-    args.out_dir.mkdir(parents=True, exist_ok=True)
-    with (args.out_dir / "hgb_special.pkl").open("wb") as f:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with (out_dir / "hgb_special.pkl").open("wb") as f:
         pickle.dump(hgb, f)
-    with (args.out_dir / "logreg_special.pkl").open("wb") as f:
-        pickle.dump({"model": logreg, "blend_w": best_w, "window": args.window}, f)
+    with (out_dir / "logreg_special.pkl").open("wb") as f:
+        pickle.dump({"model": logreg, "blend_w": best_w, "window": window}, f)
 
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    with args.report.open("w", encoding="utf-8") as f:
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    with report_path.open("w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
+    return report
 
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="训练并封存测试集评估")
+    parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
+    parser.add_argument("--window", type=int, default=30)
+    parser.add_argument("--train-ratio", type=float, default=0.7)
+    parser.add_argument("--val-ratio", type=float, default=0.15)
+    parser.add_argument(
+        "--out-dir", type=Path, default=ROOT / "models"
+    )
+    parser.add_argument(
+        "--report", type=Path, default=ROOT / "data" / "train_report.json"
+    )
+    parser.add_argument(
+        "--save-fit",
+        choices=("eval", "all"),
+        default="eval",
+        help="eval 保存不含测试集的模型；all 在评估后用全部已开奖样本再拟合，供每日预测",
+    )
+    args = parser.parse_args()
+    report = train_and_save(
+        args.csv,
+        args.out_dir,
+        args.report,
+        window=args.window,
+        train_ratio=args.train_ratio,
+        val_ratio=args.val_ratio,
+        save_fit=args.save_fit,
+    )
     print(json.dumps(report, ensure_ascii=False, indent=2))
     print(f"\n模型: {args.out_dir}")
     print(f"报告: {args.report}")

@@ -7,7 +7,12 @@ import tkinter as tk
 from datetime import date, timedelta
 from tkinter import font as tkfont
 
-from ml.web_prediction import build_prediction, parse_day
+from ml.calendar_issue import issue_to_date
+from ml.data import DEFAULT_CSV, ROOT, load_newam6hc
+from ml.next_reference import DEFAULT_MODEL_DIR
+from ml.run_train import train_and_save
+from ml.web_prediction import _PREPARED, build_prediction, parse_day
+from scripts.update_newam6hc import update_draws
 
 
 BG = "#14171c"
@@ -26,6 +31,7 @@ class PredictorApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.busy = False
+        self.pending_note = ""
         self.payload = None
         root.title("新澳门彩预测")
         root.configure(bg=BG)
@@ -44,7 +50,7 @@ class PredictorApp:
         controls = tk.Frame(root, bg=BG)
         controls.pack(fill="x", padx=22)
         tk.Label(controls, text="预测日期", bg=BG, fg=MUTED, font=self.small_font).pack(side="left")
-        self.date_var = tk.StringVar(value=date.today().isoformat())
+        self.date_var = tk.StringVar(value=self._opening_day().isoformat())
         self.date_entry = tk.Entry(
             controls, textvariable=self.date_var, width=12, bg=PANEL, fg=TEXT,
             insertbackground=TEXT, relief="flat", font=self.body_font,
@@ -54,6 +60,7 @@ class PredictorApp:
         self.prev_button = self._button(controls, "前一天", lambda: self.shift(-1))
         self.next_button = self._button(controls, "后一天", lambda: self.shift(1))
         self.run_button = self._button(controls, "生成预测", self.generate, primary=True)
+        self.train_button = self._button(controls, "更新并训练", self.retrain)
         self.status = tk.Label(controls, text="", bg=BG, fg=MUTED, font=self.small_font)
         self.status.pack(side="right")
 
@@ -103,6 +110,26 @@ class PredictorApp:
             grid.columnconfigure(column, weight=1)
         return labels
 
+    def _opening_day(self) -> date:
+        """今天已经开奖时，打开下一天的预测。"""
+        today = date.today()
+        try:
+            last_issue = int(load_newam6hc().issue.iloc[-1])
+            last_day = issue_to_date(last_issue)
+        except (OSError, ValueError):
+            return today
+        if last_day >= today:
+            return last_day + timedelta(days=1)
+        return today
+
+    def _set_busy(self, busy: bool, run_text: str) -> None:
+        state = "disabled" if busy else "normal"
+        self.run_button.configure(text=run_text, state=state)
+        self.train_button.configure(state=state)
+        self.prev_button.configure(state=state)
+        self.next_button.configure(state=state)
+        self.date_entry.configure(state=state)
+
     def shift(self, days: int) -> None:
         try:
             current = parse_day(self.date_var.get().strip())
@@ -120,9 +147,53 @@ class PredictorApp:
             self.note.configure(text=str(exc), fg=DANGER)
             return
         self.busy = True
-        self.run_button.configure(text="正在计算…", state="disabled")
+        self._set_busy(True, "正在计算…")
         self.status.configure(text="正在按这个日期计算")
         threading.Thread(target=self._calculate, args=(day,), daemon=True).start()
+
+    def retrain(self) -> None:
+        if self.busy:
+            return
+        self.busy = True
+        self._set_busy(True, "生成预测")
+        self.status.configure(text="正在抓取最新开奖…")
+        self.note.configure(text="正在下载最新开奖，随后会用全部记录重新训练模型。", fg=MUTED)
+        threading.Thread(target=self._retrain, daemon=True).start()
+
+    def _retrain(self) -> None:
+        try:
+            fetched = update_draws()
+            self.root.after(0, lambda: self.status.configure(text="正在训练模型，大约需要一两分钟…"))
+            report = train_and_save(
+                DEFAULT_CSV,
+                DEFAULT_MODEL_DIR,
+                ROOT / "data" / "train_report.json",
+                save_fit="all",
+            )
+            _PREPARED.clear()
+            next_day = issue_to_date(int(fetched["after"])) + timedelta(days=1)
+            top1 = report["metrics"]["test_ensemble"]["top1"]
+            if fetched["changed"]:
+                summary = f"已写入最新开奖 {fetched['after']}，并重新训练了模型。"
+            else:
+                summary = f"没有新开奖，已用截至 {fetched['after']} 期的数据重新训练。"
+            summary += f" 测试 Top-1 为 {top1:.2%}。"
+            self.root.after(0, lambda: self._finish_train(next_day, summary))
+        except Exception as exc:
+            message = str(exc) or exc.__class__.__name__
+            self.root.after(0, lambda: self._fail_train(message))
+
+    def _finish_train(self, day: date, summary: str) -> None:
+        self.busy = False
+        self.date_var.set(day.isoformat())
+        self.pending_note = summary
+        self.generate()
+
+    def _fail_train(self, message: str) -> None:
+        self.busy = False
+        self._set_busy(False, "生成预测")
+        self.status.configure(text="更新失败")
+        self.note.configure(text=message, fg=DANGER)
 
     def _calculate(self, day: date) -> None:
         try:
@@ -135,7 +206,7 @@ class PredictorApp:
 
     def _show(self, payload, error: str) -> None:
         self.busy = False
-        self.run_button.configure(text="生成预测", state="normal")
+        self._set_busy(False, "生成预测")
         if error or not payload:
             self.status.configure(text="")
             self.note.configure(text=error or "计算失败。", fg=DANGER)
@@ -148,7 +219,11 @@ class PredictorApp:
         )
         self._fill(self.regular_labels, payload["regular"]["picks"], payload.get("actual"), "regular")
         self._fill(self.special_labels, payload["special"]["picks"], payload.get("actual"), "special")
-        self.note.configure(text=payload["note"], fg=MUTED)
+        note = payload["note"]
+        if self.pending_note:
+            note = f"{self.pending_note} {note}"
+            self.pending_note = ""
+        self.note.configure(text=note, fg=MUTED)
         self.status.configure(text="已更新")
 
     def _fill(self, labels, picks, actual, kind: str) -> None:

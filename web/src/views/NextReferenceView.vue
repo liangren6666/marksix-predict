@@ -86,6 +86,8 @@ function validate(payload) {
 }
 
 const catalog = shallowRef(null)
+const desktop = ref(false)
+const trainLabel = ref('更新并训练')
 
 async function readJson(url) {
   const response = await fetch(url, { signal: controller.signal, cache: 'no-store' })
@@ -125,11 +127,34 @@ async function generate() {
   }
 }
 
+async function retrain() {
+  if (busy.value) return
+  busy.value = true
+  error.value = ''
+  trainLabel.value = '正在更新…'
+  try {
+    const response = await fetch(`${import.meta.env.BASE_URL}api/retrain`, { method: 'POST', cache: 'no-store' })
+    const payload = await response.json()
+    if (!response.ok) throw new Error(payload.error || '更新失败。')
+    location.reload()
+  } catch (e) {
+    if (e.name !== 'AbortError') {
+      error.value = e instanceof TypeError ? '更新没有完成。' : e.message
+    }
+    busy.value = false
+    trainLabel.value = '更新并训练'
+  }
+}
+
 onMounted(() => {
   const dataDir = import.meta.env.BASE_URL + 'data/'
   readJson(dataDir + 'regular_benchmark.json').then((payload) => {
     benchmark.value = payload
   }).catch(() => {})
+  fetch(`${import.meta.env.BASE_URL}api/desktop`, { cache: 'no-store' })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((payload) => { desktop.value = Boolean(payload?.desktop) })
+    .catch(() => {})
   generate()
 })
 onBeforeUnmount(() => controller.abort())
@@ -146,6 +171,9 @@ onBeforeUnmount(() => controller.abort())
         <span>预测日期</span>
         <input v-model="targetDate" type="date" :min="bounds.min" :max="bounds.max" :disabled="busy" @change="generate" />
       </label>
+      <button v-if="desktop" class="train-button" type="button" :disabled="busy" @click="retrain">
+        {{ trainLabel }}
+      </button>
       <button class="generate-button" type="button" :disabled="busy" @click="generate">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10a7 7 0 1 0-1.6 6.5M19 4v6h-6" /></svg>
       {{ busy ? '正在计算…' : '生成预测' }}
@@ -280,6 +308,13 @@ onBeforeUnmount(() => controller.abort())
 .generate-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .generate-button:hover:not(:disabled) { background: #ffd59a; }
 .generate-button:disabled { background: var(--accent-dim); color: var(--accent); cursor: wait; }
+.train-button {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 15px;
+  background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px;
+  white-space: nowrap; font-weight: 650; cursor: pointer;
+}
+.train-button:hover:not(:disabled) { border-color: var(--text-muted); }
+.train-button:disabled { color: var(--text-muted); cursor: wait; }
 .notice { padding: 11px 14px; border-radius: 9px; border: 1px solid #76444c; margin: 0; color: #ffc1c5; background: #302127; font-size: .9rem; }
 .candidate-panel, .matrix-panel, .detail-panel { min-width: 0; padding: 20px 22px; }
 .section-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
